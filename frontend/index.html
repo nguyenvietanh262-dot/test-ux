@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Humai Tasks - Hệ thống nhiệm vụ & điểm thưởng</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #FAF8F5;
+  min-height: 100vh;
+}
+
+/* Container */
+.container {
+  max-width: 420px;
+  margin: 0 auto;
+  background: #FAF8F5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.app-header {
+  padding: 20px 20px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FAF8F5;
+}
+.header-left .app-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #2D2A27;
+  line-height: 1;
+}
+.header-left .app-sub {
+  font-size: 11px;
+  color: #B0A898;
+  font-weight: 700;
+  margin-top: 3px;
+}
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF7043, #FF9800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Stats Row */
+.stats-row {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 12px;
+}
+.stat-card {
+  flex: 1;
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.stat-value {
+  font-size: 18px;
+  font-weight: 900;
+  color: #2D2A27;
+  line-height: 1;
+}
+.stat-label {
+  font-size: 9px;
+  color: #B0A898;
+  font-weight: 700;
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+/* Points Banner */
+.points-banner {
+  margin: 0 16px 12px;
+  background: linear-gradient(135deg, #FF7043 0%, #FF9800 100%);
+  border-radius: 18px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+}
+.points-value {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+}
+.points-label {
+  font-size: 10px;
+  opacity: .9;
+  font-weight: 700;
+  margin-top: 3px;
+}
+.points-icon {
+  font-size: 36px;
+}
+
+/* Category Tabs */
+.category-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 12px;
+  overflow-x: auto;
+}
+.category-tabs::-webkit-scrollbar { display: none; }
+.cat-tab {
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+  border: 2px solid transparent;
+}
+.cat-tab.active {
+  border-color: #2D2A27;
+  transform: scale(1.05);
+}
+
+/* Task List */
+.task-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px 80px;
+}
+.section-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: #B0A898;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  margin-bottom: 8px;
+}
+.task-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.task-card:active {
+  transform: scale(0.98);
+}
+.task-checkbox {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2.5px solid #E0DDD8;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all .2s;
+}
+.task-card.completed .task-checkbox {
+  background: #FF7043;
+  border-color: #FF7043;
+}
+.task-info {
+  flex: 1;
+}
+.task-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #2D2A27;
+  margin-bottom: 2px;
+}
+.task-card.completed .task-title {
+  text-decoration: line-through;
+  opacity: .5;
+}
+.task-desc {
+  font-size: 11px;
+  color: #B0A898;
+}
+.task-points {
+  font-size: 12px;
+  font-weight: 800;
+  color: #FF7043;
+  white-space: nowrap;
+}
+
+/* Add Task Button */
+.add-task-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF7043, #FF9800);
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(255,112,67,.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .2s;
+}
+.add-task-btn:active {
+  transform: scale(0.9);
+}
+
+/* Tab Bar */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #EEE8E0;
+  display: flex;
+  padding: 8px 0 12px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+}
+.tab-icon {
+  font-size: 22px;
+}
+.tab-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #C0B8B0;
+}
+.tab-item.active .tab-label {
+  color: #FF7043;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal.show {
+  display: flex;
+}
+.modal-content {
+  background: #FAF8F5;
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 360px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #2D2A27;
+  margin-bottom: 16px;
+}
+.form-group {
+  margin-bottom: 16px;
+}
+.form-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #B0A898;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 6px;
+  display: block;
+}
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 2px solid #E0DDD8;
+  background: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2D2A27;
+}
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+.btn-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+.btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.btn:active {
+  transform: scale(0.95);
+}
+.btn-primary {
+  background: linear-gradient(135deg, #FF7043, #FF9800);
+  color: #fff;
+}
+.btn-secondary {
+  background: #E0DDD8;
+  color: #2D2A27;
+}
+
+/* Auth Screen */
+.auth-screen {
+  display: none;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FF7043 0%, #FF9800 100%);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.auth-screen.show {
+  display: flex;
+}
+.auth-box {
+  background: #FAF8F5;
+  border-radius: 24px;
+  padding: 32px 28px;
+  max-width: 360px;
+  width: 100%;
+}
+.auth-logo {
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.auth-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #2D2A27;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.auth-subtitle {
+  font-size: 12px;
+  color: #B0A898;
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+.auth-toggle {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 12px;
+  color: #B0A898;
+  font-weight: 700;
+}
+.auth-toggle a {
+  color: #FF7043;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #B0A898;
+}
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+.empty-text {
+  font-size: 13px;
+  font-weight: 700;
+}
+</style>
+</head>
+<body>
+
+<!-- Auth Screen -->
+<div class="auth-screen show" id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">🌱</div>
+    <div class="auth-title">Humai</div>
+    <div class="auth-subtitle">Sống biết ơn mỗi ngày</div>
+
+    <form id="authForm">
+      <div class="form-group" id="usernameGroup" style="display:none">
+        <label class="form-label">Tên người dùng</label>
+        <input type="text" class="form-input" id="username" placeholder="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="email" placeholder="email@example.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mật khẩu</label>
+        <input type="password" class="form-input" id="password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%">Đăng nhập</button>
+    </form>
+
+    <div class="auth-toggle">
+      <span id="authToggleText">Chưa có tài khoản?</span>
+      <a href="#" id="authToggleLink">Đăng ký</a>
+    </div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div class="container" id="mainApp" style="display:none">
+  <div class="app-header">
+    <div class="header-left">
+      <div class="app-title">Humai 🌱</div>
+      <div class="app-sub" id="headerSubtitle">Sống biết ơn · Tháng 4, 2026</div>
+    </div>
+    <div class="user-avatar" id="userAvatar">AN</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-value" id="streakValue">🔥 0</div>
+      <div class="stat-label">Streak</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="pointsValue">0</div>
+      <div class="stat-label">Điểm ✦</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="levelValue">1</div>
+      <div class="stat-label">Cấp độ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="tasksValue">0</div>
+      <div class="stat-label">Nhiệm vụ</div>
+    </div>
+  </div>
+
+  <div class="points-banner">
+    <div>
+      <div class="points-value" id="bannerPoints">0 ✦</div>
+      <div class="points-label">Điểm biết ơn của bạn</div>
+    </div>
+    <div class="points-icon">🌿</div>
+  </div>
+
+  <div class="category-tabs" id="categoryTabs">
+    <div class="cat-tab active" data-category="all" style="background:#FFF3E0;color:#E65100">📋 Tất cả</div>
+    <div class="cat-tab" data-category="gratitude" style="background:#E8F5E9;color:#2E7D32">🙏 Biết ơn</div>
+    <div class="cat-tab" data-category="gift" style="background:#F3E5F5;color:#6A1B9A">🎁 Tặng quà</div>
+    <div class="cat-tab" data-category="journal" style="background:#E3F2FD;color:#1565C0">📖 Nhật ký</div>
+    <div class="cat-tab" data-category="meditation" style="background:#FFF8E1;color:#F57F17">🧘 Thiền định</div>
+  </div>
+
+  <div class="task-section" id="taskSection">
+    <div class="section-title">Nhiệm vụ hôm nay</div>
+    <div id="taskList"></div>
+  </div>
+
+  <button class="add-task-btn" id="addTaskBtn">+</button>
+
+  <div class="tab-bar">
+    <div class="tab-item active">
+      <div class="tab-icon">✅</div>
+      <div class="tab-label">Nhiệm vụ</div>
+    </div>
+    <div class="tab-item">
+      <div class="tab-icon">🏆</div>
+      <div class="tab-label">Thành tựu</div>
+    </div>
+    <div class="tab-item">
+      <div class="tab-icon">📊</div>
+      <div class="tab-label">Bảng xếp hạng</div>
+    </div>
+    <div class="tab-item">
+      <div class="tab-icon">👤</div>
+      <div class="tab-label">Hồ sơ</div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Task Modal -->
+<div class="modal" id="taskModal">
+  <div class="modal-content">
+    <div class="modal-title">Tạo nhiệm vụ mới</div>
+    <form id="taskForm">
+      <div class="form-group">
+        <label class="form-label">Tiêu đề</label>
+        <input type="text" class="form-input" id="taskTitle" placeholder="Ví dụ: Gọi điện cho mẹ" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mô tả</label>
+        <textarea class="form-textarea" id="taskDesc" placeholder="Thêm chi tiết..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Danh mục</label>
+        <select class="form-select" id="taskCategory">
+          <option value="gratitude">🙏 Biết ơn</option>
+          <option value="gift">🎁 Tặng quà</option>
+          <option value="journal">📖 Nhật ký</option>
+          <option value="meditation">🧘 Thiền định</option>
+          <option value="exercise">🏃 Tập thể dục</option>
+          <option value="other">📌 Khác</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Điểm thưởng</label>
+        <input type="number" class="form-input" id="taskPoints" value="10" min="1">
+      </div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-secondary" id="cancelTaskBtn">Hủy</button>
+        <button type="submit" class="btn btn-primary">Tạo</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
