@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: humai-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: humai
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - humai-network
+
+  backend:
+    build: ./backend
+    container_name: humai-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/humai
+      - JWT_SECRET=your_jwt_secret_key_change_this_in_production
+      - NODE_ENV=production
+    depends_on:
+      - mongodb
+    networks:
+      - humai-network
+
+  frontend:
+    build: ./frontend
+    container_name: humai-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - humai-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  humai-network:
+    driver: bridge
